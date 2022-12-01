@@ -1,5 +1,6 @@
 ###Agregar submodulos los demas recursos de salem###
-
+cui/
+cui_interfaces/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
