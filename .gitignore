@@ -1,6 +1,7 @@
 ###Agregar submodulos los demas recursos de salem###
 cui/
 cui_interfaces/
+webcam_sub/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
