@@ -1,14 +1,29 @@
 import rclpy
 from rclpy.node import Node
+from cui_interfaces.srv import SoundRequest
+
+from . import manejoClientes 
+import os
+import subprocess
 
 from std_msgs.msg import String
 
+
+
+
+class salemVoiceClient(manejoClientes.ClientAsync):
+
+    def build_request(self,bandera,texto):
+        self.req.bandera = bandera
+        self.req.texto = texto
+    
 
 class ControlNode(Node):
 
     def __init__(self):
         super().__init__('ControlNode')
-        #Informacion sobre el proceso de ejecución
+        #Servicio de voz de salem
+        self.voz_salem = salemVoiceClient('Voz_Salem', SoundRequest, 'sound_request')
         self.publisher_ = self.create_publisher(String, 'control_log', 10)
 
     def print_log(self,log_msg = ''):
@@ -22,7 +37,10 @@ class ControlNode(Node):
         Aqui se establecerá el flujo de control principal de
         la rutina de ejecución de salem.
         '''
-        pass
+        self.voz_salem.build_request('n','Hola soy salem')
+        self.voz_salem.send_request()
+
+        
 
 
 def main(args=None):
