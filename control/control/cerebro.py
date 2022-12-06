@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from cui_interfaces.srv import SoundRequest
+from action_cheese.action import Cheese
 
 from . import manejoClientes 
 import os
@@ -37,10 +38,17 @@ class ControlNode(Node):
         Aqui se establecerá el flujo de control principal de
         la rutina de ejecución de salem.
         '''
+
+        
         self.voz_salem.build_request('n','Hola soy salem')
         self.voz_salem.send_request()
 
+
+        self.voz_salem.build_request('n','Preparate para posar, necesitamos tomarte unas fotos')
+        self.voz_salem.send_request()
         
+        subprocess.Popen('python3  src/cheese_action_server.py 0', shell=True)
+        subprocess.Popen('python3  src/cheese_action_client.py', shell=True)
 
 
 def main(args=None):
