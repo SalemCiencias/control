@@ -2,15 +2,12 @@ import rclpy
 from rclpy.node import Node
 from cui_interfaces.srv import SoundRequest
 from action_cheese.action import Cheese
+from action_doa.action import DOAaction
 
 from . import manejoClientes 
 import os
 import subprocess
-
 from std_msgs.msg import String
-
-
-
 
 class salemVoiceClient(manejoClientes.ClientAsync):
 
@@ -37,18 +34,19 @@ class ControlNode(Node):
         '''
         Aqui se establecerá el flujo de control principal de
         la rutina de ejecución de salem.
-        '''
+        '''  
+        # DOA girar al encontrar a la persona
+        #self.audio_salem = manejoClientes.ActionClientManager('doa_action_client', DOAaction, 'doaaction')
+        #self.audio_salem.send_goal(0)
 
-        
-        self.voz_salem.build_request('n','Hola soy salem')
+        self.voz_salem.build_request('g','sounds/presentar')
         self.voz_salem.send_request()
 
-
-        self.voz_salem.build_request('n','Preparate para posar, necesitamos tomarte unas fotos')
+        self.voz_salem.build_request('g','sounds/posar')
         self.voz_salem.send_request()
         
-        subprocess.Popen('python3  src/cheese_action_server.py 0', shell=True)
-        subprocess.Popen('python3  src/cheese_action_client.py', shell=True)
+        # subprocess.Popen('python3  src/cheese_action_server.py 0', shell=True)
+        # subprocess.Popen('python3  src/cheese_action_client.py', shell=True)
 
 
 def main(args=None):
