@@ -1,36 +1,76 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.action import ActionClient
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
+
+
 from cui_interfaces.srv import SoundRequest
 from action_cheese.action import Cheese
 
-from . import manejoClientes 
+from .manejoClientes import ActionClientManager, ClientAsync
 import os
-import subprocess
+import sys
+from subprocess import Popen
+
 
 from std_msgs.msg import String
 
+CHEESE_CAMERA = int(sys.argv[1])
+
+class CheeseClient(ActionClientManager):
+
+    ALL_OK = 'YES'
+
+    def build_goal_msg(self,*args):
+        order = args[0]
+        goal_msg = Cheese.Goal()
+        goal_msg.order = order
+        return goal_msg
+
+    def result_callback(self, future):
+        result = future.result().result.result
+        print(result)
+        if result == self.ALL_OK:
+            Popen(f'ros2 run face_recognition_pub talker {CHEESE_CAMERA}',shell=True)
+        else:
+            print('Se intentará tomar de nuevo las fotos')
+            self.send_goal('inicia')
+        
+        
+
+    def feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+        message = 'Received feedback: {0}'.format(feedback.progress)
+        print(message)
 
 
+class SalemVoiceClient(ClientAsync):
 
-class salemVoiceClient(manejoClientes.ClientAsync):
-
-    def build_request(self,bandera,texto):
+    def build_request(self, bandera, texto):
         self.req.bandera = bandera
         self.req.texto = texto
-    
+
 
 class ControlNode(Node):
 
     def __init__(self):
         super().__init__('ControlNode')
-        #Servicio de voz de salem
-        self.voz_salem = salemVoiceClient('Voz_Salem', SoundRequest, 'sound_request')
-        self.publisher_ = self.create_publisher(String, 'control_log', 10)
 
-    def print_log(self,log_msg = ''):
+        self.voz_salem = SalemVoiceClient(
+            'Voz_Salem', SoundRequest, 'sound_request')
+
+        self.cheese_client = CheeseClient(self,Cheese, 'cheese')    
+
+
+        self.publisher = self.create_publisher(String, 'control_log', 10)
+
+
+
+    def print_log(self, log_msg=''):
         msg = String()
         msg.data = f"SAlEM: {log_msg}"
-        self.publisher_.publish(msg)
+        self.publisher.publish(msg)
         self.get_logger().info('Publishing: "%s"' % msg.data)
 
     def go_salem(self):
@@ -39,16 +79,18 @@ class ControlNode(Node):
         la rutina de ejecución de salem.
         '''
 
-        
-        self.voz_salem.build_request('n','Hola soy salem')
+        self.voz_salem.build_request('n', 'Hola soy salem')
         self.voz_salem.send_request()
 
-
-        self.voz_salem.build_request('n','Preparate para posar, necesitamos tomarte unas fotos')
+        self.voz_salem.build_request(
+            'n', 'Preparate para posar, necesitamos tomarte unas fotos')
         self.voz_salem.send_request()
+
+        self.cheese_client.send_goal('inicia')
+
         
-        subprocess.Popen('python3  src/cheese_action_server.py 0', shell=True)
-        subprocess.Popen('python3  src/cheese_action_client.py', shell=True)
+
+        print("Seguimos con la ejecucion")
 
 
 def main(args=None):
@@ -57,10 +99,7 @@ def main(args=None):
     salem_brain = ControlNode()
     salem_brain.go_salem()
     rclpy.spin(salem_brain)
-    
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
+
     salem_brain.destroy_node()
     rclpy.shutdown()
 
