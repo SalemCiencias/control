@@ -97,7 +97,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     salem_brain = ControlNode()
-    executor = MutuallyExclusiveCallbackGroup()
+    executor = MultiThreadedExecutor
     # Esto deberia permitir que salem ejecute peticiones asincronas
     executor.add_node(salem_brain)
     salem_brain.go_salem()
