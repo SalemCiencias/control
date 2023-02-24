@@ -12,8 +12,9 @@ class ActionClientManager():
     a los clientes que se conectan con action services 
     '''
     def __init__(self,node,action_type, action_name):
-
-        self.client = ActionClient(node, action_type, action_name)
+        # Esto es para evitar los dealocks por usar el mismo grupo para el manejo de callbacks
+        group = ReentrantCallbackGroup()
+        self.client = ActionClient(node, action_type, action_name,callback_group=group)
         self.node = node
         self.__goal_future = None
         self.__result_future = None
@@ -107,7 +108,7 @@ class ClientAsync(Node):
     def __init__(self, client_name, interface_type, service_name):
         super().__init__(client_name)
         #Esto es para evitar los dealocks por usar el mismo grupo para el manejo de callbacks
-        group = MutuallyExclusiveCallbackGroup()
+        group = ReentrantCallbackGroup()
         self.cli = self.create_client(interface_type,
                                       service_name, 
                                       callback_group=group)
