@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/xkvsp/rosR_ws/install/navegacion_interfaces/include/**",
+        "/home/xkvsp/rosR_ws/install/cui_interfaces/include/**",
+        "/home/xkvsp/rosR_ws/install/action_doa/include/**",
+        "/home/xkvsp/rosR_ws/install/action_cheese/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/xkvsp/rosR_ws/src/action_doa/include/**",
+        "/home/xkvsp/rosR_ws/src/cui_interfaces/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

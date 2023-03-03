@@ -1,0 +1,19 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/xkvsp/rosR_ws/install/webcam_sub/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/take_pics/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/obstaculo_camara/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/navegacion_interfaces/local/lib/python3.10/dist-packages",
+        "/home/xkvsp/rosR_ws/install/navegacion_autonoma/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/face_recognition_pub/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/doa/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/cui_interfaces/local/lib/python3.10/dist-packages",
+        "/home/xkvsp/rosR_ws/install/cui/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/control/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/circuitos/lib/python3.10/site-packages",
+        "/home/xkvsp/rosR_ws/install/action_doa/local/lib/python3.10/dist-packages",
+        "/home/xkvsp/rosR_ws/install/action_cheese/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
