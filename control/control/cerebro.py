@@ -17,18 +17,17 @@ from subprocess import Popen
 from std_msgs.msg import String
 
 CHEESE_CAMERA = int(sys.argv[1])
-lock_thread = False
 
 class CheeseClient(ActionClientManager):
 
     ALL_OK = 'YES'
-    def __init__(self,node,action_type, action_name):
+    def __init__(self,node,action_type, action_name, cui_service):
         group = ReentrantCallbackGroup()
         self.client = ActionClient(node, action_type, action_name,callback_group=group)
+        self.cui = cui_service
         self.node = node
         self.__goal_future = None
         self.__result_future = None
-        self.cuenta = 0
 
     def build_goal_msg(self,*args):
         order = args[0]
@@ -40,10 +39,18 @@ class CheeseClient(ActionClientManager):
         result = future.result().result.result
         print(result)
         if result == self.ALL_OK:
-            self.cuenta = 4
-            print('asdfghjkhgfdc--------------------------------------')
-            print(self.cuenta)
+            self.lock = False
             Popen(f'ros2 run face_recognition_pub talker {CHEESE_CAMERA}',shell=True)
+            print('aqui ************************************************************')
+            self.cui.build_request(
+            'n', 'Prueba de que funicona')
+            self.cui.send_request()
+
+            print("Seguimos con la ejecucion")
+
+            self.cui.build_request(
+                'n', 'otra cosa')
+            self.cui.send_request()
         else:
             print('Se intentará tomar de nuevo las fotos')
             self.sendlock_thread_goal('inicia')
@@ -71,7 +78,7 @@ class ControlNode(Node):
         self.voz_salem = SalemVoiceClient(
             'Voz_Salem', SoundRequest, 'sound_request')
 
-        self.cheese_client = CheeseClient(self,Cheese, 'cheese')    
+        self.cheese_client = CheeseClient(self,Cheese, 'cheese',cui_service=self.voz_salem)    
 
 
         self.publisher = self.create_publisher(String, 'control_log', 10)
@@ -98,25 +105,13 @@ class ControlNode(Node):
         self.voz_salem.send_request()
 
         self.cheese_client.send_goal('inicia')
-        print(self.cheese_client.cuenta)
-        if self.cheese_client.cuenta == 4:
-            self.voz_salem.build_request(
-                'n', 'Prueba de que funicona')
-            self.voz_salem.send_request()
-
-            print("Seguimos con la ejecucion")
-
-            self.voz_salem.build_request(
-                'n', 'otra cosa')
-            self.voz_salem.send_request()
-        print('--------------------********************************')
-        print(self.cheese_client.cuenta)
-
+            
+    
 def main(args=None):
     rclpy.init(args=args)
 
     salem_brain = ControlNode()
-    executor = SingleThreadedExecutor()
+    executor = MultiThreadedExecutor()
     # Esto deberia permitir que salem ejecute peticiones asincronas
     executor.add_node(salem_brain)
     salem_brain.go_salem()
